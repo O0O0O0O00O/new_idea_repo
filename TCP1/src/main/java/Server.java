@@ -10,6 +10,11 @@ public class Server {
     public static void main(String[] args) throws IOException{
         ServerSocket serverSocket = createServerSocket();
         initServerSocket(serverSocket);
+        // baklog设置当前可允许等待链接的队列为50个
+        serverSocket.bind(new InetSocketAddress(Inet4Address.getLocalHost(), PORT), 50);
+
+        System.out.println("server ready");
+        System.out.println("server info:" + serverSocket.getInetAddress() + "P:" + serverSocket.getLocalPort());
 
         for(;;){
             Socket client = serverSocket.accept();
@@ -68,11 +73,6 @@ public class Server {
     private static ServerSocket createServerSocket() throws IOException{
         ServerSocket serverSocket = new ServerSocket();
 
-        // baklog设置当前可允许等待链接的队列为50个
-        serverSocket.bind(new InetSocketAddress(Inet4Address.getLocalHost(), PORT), 50);
-
-
-
         return serverSocket;
     }
 
@@ -81,7 +81,7 @@ public class Server {
 
         serverSocket.setReceiveBufferSize(64*1024*1024);
 
-        serverSocket.setSoTimeout(2000);
+        // serverSocket.setSoTimeout(2000);
 
         serverSocket.setPerformancePreferences(1, 1, 1);
     }
