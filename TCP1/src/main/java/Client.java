@@ -90,36 +90,27 @@ public class Client {
 
     private static void todo(Socket client) throws IOException{
 
-        // 构建键盘输入流
-        InputStream in = System.in;
-        BufferedReader input = new BufferedReader(new InputStreamReader(in));
 
         // 得到Socket输出流，并转化为打印流
         OutputStream outputStream = client.getOutputStream();
-        PrintStream socketPrintStream = new PrintStream(outputStream);
 
         // 得到socket输入流，并转换成BufferedReader
         InputStream inputStream = client.getInputStream();
-        BufferedReader socketBufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        byte[] buffer = new byte[128];
 
-        boolean flag = true;
-        do {
-            // 键盘读取
-            String str = input.readLine();
+        outputStream.write(new byte[]{1});
 
-            socketPrintStream.println(str);
+        int read = inputStream.read(buffer);
+        if(read > 0){
+            System.out.println("data length：" + read + " data:" + new String(buffer));
+        }else{
+            System.out.println("data length:" + read + " data:" + new String(buffer));
+        }
 
-            String echo = socketBufferedReader.readLine();
-            if ("bye".equalsIgnoreCase((echo))) {
-                flag = false;
-            } else {
-                System.out.println(echo);
-            }
-        }while(flag);
 
         // 资源释放
-        socketPrintStream.close();
-        socketBufferedReader.close();
+        inputStream.close();
+        outputStream.close();
     }
 
     private void cl(Socket client) throws IOException{

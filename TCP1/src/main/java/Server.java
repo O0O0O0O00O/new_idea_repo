@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 
 public class Server {
@@ -39,22 +37,22 @@ public class Server {
             this.flag = true;
 
             try {
-                PrintStream socketOutput = new PrintStream(this.socket.getOutputStream());
-                BufferedReader socketInput = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+                OutputStream outputStream = this.socket.getOutputStream();
+                InputStream inputStream = this.socket.getInputStream();
 
-                do {
-                    String str = socketInput.readLine();
-                    if ("bye".equalsIgnoreCase(str)) {
-                        socketOutput.println("bye");
-                        this.flag = false;
-                    } else {
-                        System.out.println(str);
-                        socketOutput.println("answer:" + str.length());
-                    }
-                } while(this.flag);
+                byte[] buffer = new byte[128];
+                int readCount = inputStream.read(buffer);
+                if(readCount > 0){
+                    System.out.println("data length：" + readCount + " data:" + Array.getByte(buffer, 0));
+                    outputStream.write(buffer, 0, readCount);
+                }else{
+                    System.out.println("data length:" + readCount + " data:" + new String(buffer));
+                    outputStream.write(new byte[]{0});
+                }
 
-                socketInput.close();
-                socketOutput.close();
+                inputStream.close();
+                outputStream.close();
+
             } catch (Exception var12) {
                 System.out.println("exception, connection close");
             } finally {
